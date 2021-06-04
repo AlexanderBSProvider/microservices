@@ -1,9 +1,23 @@
 from flask import Flask
 from flask_restful import Resource, Api, reqparse, abort, marshal, fields
+#from flask_graylog import Graylog
+import logging
+import graypy
+
+
 
 # Initialize Flask
 app = Flask(__name__)
 api = Api(app)
+
+logger = logging.getLogger('test_logger')
+logger.setLevel(logging.DEBUG)
+
+handler = graypy.GELFHTTPHandler('localhost', 12201)
+logger.addHandler(handler)
+
+logger.debug('Hello Graylog.')
+
 
 # A List of Dicts to store all of the books
 books = [{
@@ -50,7 +64,8 @@ class Book(Resource):
 
         if(len(book) == 0):
             abort(404)
-
+        #logger.info('Message')
+        #logger.debug('Hello Graylog.')
         return{"book": marshal(book[0], bookFields)}
 
     # PUT - Given an id
@@ -96,6 +111,8 @@ class BookList(Resource):
             "rating", type=float, required=True, help="The rating must be provided", location="json")
 
     def get(self):
+        #logger.info('Message')
+        #logger.debug('Hello Graylog.')
         return{"books": [marshal(book, bookFields) for book in books]}
 
     def post(self):
